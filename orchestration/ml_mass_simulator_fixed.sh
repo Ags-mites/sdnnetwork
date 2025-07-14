@@ -1,5 +1,4 @@
 #!/bin/bash
-# SIMULADOR ML MASIVO - VERSIÓN CORREGIDA
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)

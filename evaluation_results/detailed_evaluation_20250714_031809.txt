@@ -1,0 +1,20 @@
+EVALUACIÓN ML PARA OPTIMIZACIÓN SDN
+========================================
+
+Fecha: 2025-07-14 03:18:09.886464
+Dataset: /home/ubuntu/sdn_project/data/ml_dataset_binary_20250713_181954.csv
+Registros procesados: 6000
+
+MODELOS ENTRENADOS:
+--------------------
+RandomForest: Accuracy=0.998, ROC-AUC=1.000
+GradientBoosting: Accuracy=0.998, ROC-AUC=0.999
+LogisticRegression: Accuracy=0.973, ROC-AUC=0.994
+
+Mejor modelo: RandomForest
+
+COMPARACIÓN DE DESEMPEÑO:
+-------------------------
+SLA Baseline: 14.4%
+SLA Optimizado: 17.3%
+Mejora: 20.0%

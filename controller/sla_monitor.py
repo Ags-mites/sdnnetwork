@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 """
 Controlador Ryu ENHANCED con SLA BINARIO para ML
-Archivo: controller/sla_monitor_ml.py
-
-CARACTERÍSTICAS:
-- SLA binario: True (cumple) / False (no cumple)
-- 30 pares bidireccionales de hosts
-- Muestreo cada 2 segundos
-- Patrones de tráfico realistas
-- Features adicionales para ML
-- Target configurable de registros
 """
 
 import time
@@ -69,7 +60,6 @@ class MLBinarySLAController(app_manager.RyuApp):
     def _init_path_configs(self):
         """Configurar características de cada ruta según topología"""
         return {
-            # Rutas RÁPIDAS (s1-s2): 5ms delay, 100Mbps
             ('h1', 'h3'): {'type': 'fast', 'base_latency': 10, 'base_throughput': 85},
             ('h1', 'h4'): {'type': 'fast', 'base_latency': 12, 'base_throughput': 80},
             ('h2', 'h3'): {'type': 'fast', 'base_latency': 11, 'base_throughput': 82},
@@ -79,7 +69,6 @@ class MLBinarySLAController(app_manager.RyuApp):
             ('h4', 'h1'): {'type': 'fast', 'base_latency': 12, 'base_throughput': 79},
             ('h4', 'h2'): {'type': 'fast', 'base_latency': 13, 'base_throughput': 77},
             
-            # Rutas LENTAS (s1-s3): 20ms delay, 100Mbps
             ('h1', 'h5'): {'type': 'slow', 'base_latency': 28, 'base_throughput': 70},
             ('h1', 'h6'): {'type': 'slow', 'base_latency': 32, 'base_throughput': 65},
             ('h2', 'h5'): {'type': 'slow', 'base_latency': 30, 'base_throughput': 68},
@@ -89,7 +78,6 @@ class MLBinarySLAController(app_manager.RyuApp):
             ('h6', 'h1'): {'type': 'slow', 'base_latency': 33, 'base_throughput': 64},
             ('h6', 'h2'): {'type': 'slow', 'base_latency': 36, 'base_throughput': 61},
             
-            # Rutas LIMITADAS (s2-s3): 10ms delay, 50Mbps, 0.1% loss
             ('h3', 'h5'): {'type': 'limited', 'base_latency': 18, 'base_throughput': 45},
             ('h3', 'h6'): {'type': 'limited', 'base_latency': 22, 'base_throughput': 40},
             ('h4', 'h5'): {'type': 'limited', 'base_latency': 20, 'base_throughput': 42},
@@ -99,7 +87,6 @@ class MLBinarySLAController(app_manager.RyuApp):
             ('h6', 'h3'): {'type': 'limited', 'base_latency': 23, 'base_throughput': 39},
             ('h6', 'h4'): {'type': 'limited', 'base_latency': 26, 'base_throughput': 37},
             
-            # Rutas INTRA-SWITCH (mismo switch): muy rápidas
             ('h1', 'h2'): {'type': 'intra', 'base_latency': 2, 'base_throughput': 95},
             ('h2', 'h1'): {'type': 'intra', 'base_latency': 2, 'base_throughput': 95},
             ('h3', 'h4'): {'type': 'intra', 'base_latency': 2, 'base_throughput': 95},
@@ -121,16 +108,16 @@ class MLBinarySLAController(app_manager.RyuApp):
                     'jitter_ms', 
                     'packet_loss_percent',
                     'throughput_mbps',
-                    'sla_compliant',        # BINARIO: True/False
-                    'path_type',            # fast/slow/limited/intra
-                    'traffic_pattern',      # morning_rush/evening_rush/etc
-                    'congestion_level',     # low/medium/high
-                    'hour_of_day',          # 0-23 para análisis temporal
-                    'is_weekend'            # True/False
+                    'sla_compliant',     
+                    'path_type',         
+                    'traffic_pattern',   
+                    'congestion_level',  
+                    'hour_of_day',       
+                    'is_weekend'         
                 ])
-            self.logger.info(f"� CSV ML optimizado inicializado: {self.csv_file}")
+            self.logger.info(f"CSV ML optimizado inicializado: {self.csv_file}")
         except Exception as e:
-            self.logger.error(f"❌ Error inicializando CSV: {e}")
+            self.logger.error(f"Error inicializando CSV: {e}")
     
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -167,7 +154,7 @@ class MLBinarySLAController(app_manager.RyuApp):
         pkt = packet.Packet(msg.data)
         eth = pkt.get_protocols(ethernet.ethernet)[0]
         
-        if eth.ethertype == 0x88cc:  # Ignorar LLDP
+        if eth.ethertype == 0x88cc:  
             return
         
         dst = eth.dst
@@ -216,7 +203,7 @@ class MLBinarySLAController(app_manager.RyuApp):
         """Obtener contexto temporal actual"""
         now = datetime.now()
         hour = now.hour
-        is_weekend = now.weekday() >= 5  # Sábado=5, Domingo=6
+        is_weekend = now.weekday() >= 5 
         
         # Determinar patrón de tráfico
         pattern_name = 'normal'
